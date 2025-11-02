@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GP Paper 1 Essay Questions Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Light mode (default) */
+        :root {
+            --bg-primary: #f5f5f5;
+            --bg-secondary: white;
+            --bg-header: #2c3e50;
+            --bg-controls: #ecf0f1;
+            --bg-legend: #f8f9fa;
+            --bg-hover: #f8f9fa;
+            --bg-th: #34495e;
+            --bg-th-hover: #2c3e50;
+            
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-light: #7f8c8d;
+            --text-inverse: white;
+            
+            --border-primary: #bdc3c7;
+            --border-secondary: #ecf0f1;
+            --border-accent: #3498db;
+            
+            --shadow: rgba(0,0,0,0.1);
+        }
+        
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #1a1a1a;
+                --bg-secondary: #2d2d2d;
+                --bg-header: #1e2936;
+                --bg-controls: #252525;
+                --bg-legend: #252525;
+                --bg-hover: #3a3a3a;
+                --bg-th: #1e2936;
+                --bg-th-hover: #161d26;
+                
+                --text-primary: #e0e0e0;
+                --text-secondary: #b0b0b0;
+                --text-light: #999;
+                --text-inverse: #e0e0e0;
+                
+                --border-primary: #444;
+                --border-secondary: #3a3a3a;
+                --border-accent: #5ba3e6;
+                
+                --shadow: rgba(0,0,0,0.3);
+            }
+            
+            /* Adjust status colors for dark mode */
+            .status.done {
+                background: #2d7a4e;
+            }
+            
+            .status.wip {
+                background: #d68910;
+            }
+            
+            .status.na {
+                background: #5a6670;
+            }
+            
+            .sg-yes {
+                background: #2471a3;
+            }
+            
+            .sg-no {
+                background: #3a3a3a;
+                color: #999;
+            }
+            
+            /* Adjust topic colors for dark mode */
+            .topic-soc { background: #6c3483; }
+            .topic-eco { background: #c0392b; }
+            .topic-pol { background: #21618c; }
+            .topic-art { background: #ba6218; }
+            .topic-sci { background: #117a65; }
+            .topic-env { background: #1e8449; }
+            
+            .view-essay {
+                color: #5ba3e6;
+                border-color: #5ba3e6;
+            }
+            
+            .view-essay:hover {
+                background: #2471a3;
+                border-color: #2471a3;
+                color: #e0e0e0;
+            }
+            
+            select, input {
+                background: #3a3a3a;
+                color: #e0e0e0;
+                border-color: #555;
+            }
+            
+            select:focus, input:focus {
+                outline: 1px solid #5ba3e6;
+                border-color: #5ba3e6;
+            }
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+        
+        header {
+            background: var(--bg-header);
+            color: var(--text-inverse);
+            padding: 30px;
+            border-left: 4px solid var(--border-accent);
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .controls {
+            padding: 20px 30px;
+            background: var(--bg-controls);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            border-top: 1px solid var(--border-primary);
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        select, input {
+            padding: 6px 10px;
+            border: 1px solid var(--border-primary);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 30px 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background: var(--bg-th);
+            color: var(--text-inverse);
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        
+        th:hover {
+            background: var(--bg-th-hover);
+        }
+        
+        th.sort-asc::after {
+            content: ' ↑';
+        }
+        
+        th.sort-desc::after {
+            content: ' ↓';
+        }
+        
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border-secondary);
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        tr:hover {
+            background: var(--bg-hover);
+        }
+        
+        .status {
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+            min-width: 60px;
+        }
+        
+        .status.done {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .status.wip {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .status.na {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .sg-yes {
+            background: #3498db;
+            color: white;
+            padding: 2px 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .sg-no {
+            background: var(--bg-controls);
+            color: var(--text-light);
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+        
+        .topic-badge {
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .topic-soc { background: #8e44ad; }
+        .topic-eco { background: #e74c3c; }
+        .topic-pol { background: #2980b9; }
+        .topic-art { background: #e67e22; }
+        .topic-sci { background: #16a085; }
+        .topic-env { background: #27ae60; }
+        
+        .view-essay {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 4px 8px;
+            border: 1px solid #3498db;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        
+        .view-essay:hover {
+            background: #3498db;
+            color: white;
+        }
+        
+        .no-essay {
+            color: var(--text-light);
+            font-style: italic;
+            font-size: 12px;
+        }
+        
+        .question-text {
+            max-width: 400px;
+            line-height: 1.4;
+        }
+        
+        .legend {
+            padding: 20px 30px;
+            background: var(--bg-legend);
+            border-top: 1px solid var(--border-secondary);
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+        
+        .legend-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            margin-right: 10px;
+            color: var(--text-primary);
+        }
+        
+        #searchInput {
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GP Paper 1 Essay Questions Tracker</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <strong>Total Questions:</strong> 159
+                </div>
+                <div class="stat-item">
+                    <strong>Completed:</strong> <span id="completedCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <strong>In Progress:</strong> <span id="wipCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <strong>Not Attempted:</strong> <span id="naCount">0</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="controls">
+            <div class="filter-group">
+                <label>Search:</label>
+                <input type="text" id="searchInput" placeholder="Search questions...">
+            </div>
+            <div class="filter-group">
+                <label>Year:</label>
+                <select id="yearFilter">
+                    <option value="">All Years</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
+                    <option value="2014">2014</option>
+                    <option value="GEN">Generated</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Topic:</label>
+                <select id="topicFilter">
+                    <option value="">All Topics</option>
+                    <option value="SOC">Society & Culture</option>
+                    <option value="ECO">Economics</option>
+                    <option value="POL">Politics</option>
+                    <option value="ART">Arts & Humanities</option>
+                    <option value="SCI">Science & Technology</option>
+                    <option value="ENV">Environment</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Status:</label>
+                <select id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="DONE">Completed</option>
+                    <option value="WIP">In Progress</option>
+                    <option value="NA">Not Attempted</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Singapore:</label>
+                <select id="sgFilter">
+                    <option value="">All</option>
+                    <option value="Yes">Singapore Only</option>
+                    <option value="No">Non-Singapore</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-section">
+                <span class="legend-title">Status:</span>
+                <span class="status done">DONE</span>
+                <span class="status wip">WIP</span>
+                <span class="status na">NA</span>
+            </div>
+            <div class="legend-section">
+                <span class="legend-title">Topics:</span>
+                <span class="topic-badge topic-soc">SOC</span>
+                <span class="topic-badge topic-eco">ECO</span>
+                <span class="topic-badge topic-pol">POL</span>
+                <span class="topic-badge topic-art">ART</span>
+                <span class="topic-badge topic-sci">SCI</span>
+                <span class="topic-badge topic-env">ENV</span>
+            </div>
+            <div class="legend-section">
+                <span class="legend-title">Types:</span>
+                V=Value, I=Impact, P=Possibility, E=Effectiveness, R=Responsibility, C=Control, J=Justification
+            </div>
+        </div>
+        
+        <div class="table-wrapper">
+            <table id="questionsTable">
+                <thead>
+                    <tr>
+                        <th data-sort="num">#</th>
+                        <th data-sort="year">Year</th>
+                        <th data-sort="question">Question</th>
+                        <th data-sort="topic">Topic</th>
+                        <th data-sort="type">Type</th>
+                        <th data-sort="sg">SG?</th>
+                        <th data-sort="status">Status</th>
+                        <th>Essay</th>
+                        <th data-sort="notes">Notes</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Table rows will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Questions data
+        const questionsData = [
+            // 2022 Questions
+            {num: 1, year: "2022", question: "Consider the view that people imprisoned for crimes should lose all their rights.", topic: "SOC", type: "J", sg: "No", status: "DONE", file: "1_criminal_rights.html", notes: "Agent_8"},
+            {num: 2, year: "2022", question: "Does religion still have a role in the modern world?", topic: "SOC", type: "V", sg: "No", status: "DONE", file: "2_religion_modern_world.html", notes: "Agent_8"},
+            {num: 3, year: "2022", question: "'Dramas on television or film are never as effective as a live performance.' Discuss.", topic: "ART", type: "E", sg: "No", status: "DONE", file: "3_dramas_live_vs_recorded.html", notes: "Agent_40"},
+            {num: 4, year: "2022", question: "Assess the extent to which different age groups in your society are valued equally.", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "4_age_groups_valued.html", notes: "Agent_2 - Singapore aging population"},
+            {num: 5, year: "2022", question: "To what extent can individuals shape their own lives when the world is so unpredictable?", topic: "SOC", type: "P", sg: "No", status: "DONE", file: "5_individual_agency_unpredictable_world.html", notes: "Agent_1"},
+            {num: 6, year: "2022", question: "'Too many historical figures are famous for the wrong reasons.' Discuss.", topic: "SOC", type: "J", sg: "No", status: "DONE", file: "6_historical_figures_fame.html", notes: "Agent_11"},
+            {num: 7, year: "2022", question: "'The results of scientific research should be available to everyone.' How far do you agree?", topic: "SCI", type: "J", sg: "No", status: "DONE", file: "7_scientific_research_accessibility.html", notes: "Agent_41"},
+            {num: 8, year: "2022", question: "Examine the claim that music without words lacks both meaning and appeal.", topic: "ART", type: "V", sg: "No", status: "DONE", file: "8_music_without_words.html", notes: "Agent_12"},
+            {num: 9, year: "2022", question: "Since the extinction of species is a natural phenomenon, is there any point in trying to prevent it?", topic: "ENV", type: "J", sg: "No", status: "DONE", file: "9_species_extinction_prevention.html", notes: "Agent_13"},
+            {num: 10, year: "2022", question: "'Consumerism is more of a curse than a blessing.' How true is this of your society?", topic: "ECO", type: "I", sg: "Yes", status: "DONE", file: "10_consumerism_curse_blessing.html", notes: "Agent_42"},
+            {num: 11, year: "2022", question: "Consider the view that mathematics is of little interest to most people as it is too complex.", topic: "SCI", type: "V", sg: "No", status: "DONE", file: "11_mathematics_complexity_interest.html", notes: "Agent_14"},
+            {num: 12, year: "2022", question: "'It is not winning, but taking part, which matters.' How acceptable is this as an approach to life?", topic: "SOC", type: "J", sg: "No", status: "DONE", file: "12_participation_over_winning.html", notes: "Agent_15"},
+            
+            // 2021 Questions
+            {num: 13, year: "2021", question: "How far is the pursuit of happiness the most important human goal?", topic: "SOC", type: "V", sg: "No", status: "DONE", file: "13_pursuit_happiness.html", notes: "Agent_16"},
+            {num: 14, year: "2021", question: "'Scientific advancement breeds complacency.' How far do you agree?", topic: "SCI", type: "I", sg: "No", status: "DONE", file: "14_scientific_advancement_complacency.html", notes: "Agent_17"},
+            {num: 15, year: "2021", question: "'Power these days lies more with the people than the politicians.' To what extent is this true?", topic: "POL", type: "C", sg: "No", status: "DONE", file: "15_power_people_vs_politicians.html", notes: "Agent_18"},
+            {num: 16, year: "2021", question: "To what extent has social media devalued true friendship in your society?", topic: "SOC", type: "I", sg: "Yes", status: "DONE", file: "16_social_media_friendship.html", notes: "Agent_43"},
+            {num: 17, year: "2021", question: "To what extent is charitable giving desirable?", topic: "SOC", type: "V", sg: "No", status: "DONE", file: "17_charitable_giving.html", notes: "Agent_19"},
+            {num: 18, year: "2021", question: "'Films are concerned with escaping from the problems of everyday life, rather than addressing them.' Discuss.", topic: "ART", type: "V", sg: "No", status: "DONE", file: "18_films_escapism_vs_addressing_problems.html", notes: "Agent_20"},
+            {num: 19, year: "2021", question: "'What an individual eats or drinks should not be the concern of the state.' What is your view?", topic: "POL", type: "R", sg: "No", status: "DONE", file: "19_state_dietary_intervention.html", notes: "Agent_21"},
+            {num: 20, year: "2021", question: "Is news today reliable?", topic: "SOC", type: "V", sg: "No", status: "DONE", file: "20_news_reliability.html", notes: "Agent_22"},
+            {num: 21, year: "2021", question: "'The arts are nothing more than a luxury.' How far is this true of your society?", topic: "ART", type: "V", sg: "Yes", status: "DONE", file: "21_arts_luxury.html", notes: "Agent_2 - Singapore arts funding"},
+            {num: 22, year: "2021", question: "'Staging major sporting events brings nothing but benefits to the host country.' Discuss.", topic: "ECO", type: "I", sg: "No", status: "DONE", file: "22_sporting_events_host_benefits.html", notes: "Agent_23"},
+            {num: 23, year: "2021", question: "Are global tourism and travel still necessary when everything can be experienced or achieved online?", topic: "ECO", type: "J", sg: "No", status: "DONE", file: "23_global_tourism_online_experience.html", notes: "Agent_24"},
+            {num: 24, year: "2021", question: "'Advertising is largely about persuading people to buy what they do not need.' How far do you agree?", topic: "ECO", type: "J", sg: "No", status: "DONE", file: "24_advertising_persuasion.html", notes: "Agent_25"},
+            
+            // 2019 Questions
+            {num: 25, year: "2019", question: "How far should countries have relations with others whose human rights record is poor?", topic: "POL", type: "J", sg: "No", status: "DONE", file: "25_countries_human_rights_relations.html", notes: "Agent_8"},
+            {num: 26, year: "2019", question: "To what extent should income equality be a goal in your society?", topic: "ECO", type: "V", sg: "Yes", status: "DONE", file: "26_income_equality_goal.html", notes: "Agent_2 - Singapore inequality"},
+            {num: 27, year: "2019", question: "'Science is the only answer to global hunger.' Discuss.", topic: "SCI", type: "J", sg: "No", status: "DONE", file: "27_science_global_hunger.html", notes: "Agent_26"},
+            {num: 28, year: "2019", question: "Consider the view that social media has more influence than politicians.", topic: "POL", type: "C", sg: "No", status: "DONE", file: "28_social_media_vs_politicians.html", notes: "Agent_27"},
+            {num: 29, year: "2019", question: "To what extent is artificial intelligence replacing the role of humans?", topic: "SCI", type: "I", sg: "No", status: "DONE", file: "29_ai_replacing_humans.html", notes: "Agent_28 - AI role replacement"},
+            {num: 30, year: "2019", question: "'A leader's responsibility should always be to his or her own country, not other nations.' Discuss.", topic: "POL", type: "R", sg: "No", status: "DONE", file: "30_leader_responsibility.html", notes: "Agent_2"},
+            {num: 31, year: "2019", question: "'Religion is an important part of the lives of young people today.' Consider whether this is true in your society.", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "31_religion_young_people_singapore.html", notes: "Agent_1"},
+            {num: 32, year: "2019", question: "Does violence in the visual media portray reality or encourage the unacceptable?", topic: "SOC", type: "I", sg: "No", status: "DONE", file: "32_violence_visual_media.html", notes: "Agent_29"},
+            {num: 33, year: "2019", question: "Is globalisation to be welcomed or feared today?", topic: "ECO", type: "V", sg: "No", status: "DONE", file: "33_globalisation_welcomed_feared.html", notes: "Agent_30 - Economic integration analysis"},
+            {num: 34, year: "2019", question: "Should both parents take equal responsibility for raising their children?", topic: "SOC", type: "R", sg: "No", status: "DONE", file: "34_equal_parental_responsibility.html", notes: "Agent_31"},
+            {num: 35, year: "2019", question: "Assess the importance of food within Singaporean culture.", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "35_singaporean_food_culture.html", notes: "Agent_7 - Singapore hawker culture"},
+            {num: 36, year: "2019", question: "Can fiction teach us anything meaningful about the real world?", topic: "ART", type: "P", sg: "No", status: "DONE", file: "36_fiction_teaching_real_world.html", notes: "Agent_32"},
+            
+            // 2018 Questions
+            {num: 37, year: "2018", question: "How far is failure an essential part of success?", topic: "SOC", type: "V", sg: "No", status: "DONE", file: "37_failure_essential_success.html", notes: "Agent_33"},
+            {num: 38, year: "2018", question: "To what extent is the pursuit of continuous economic growth a desirable goal?", topic: "ECO", type: "V", sg: "No", status: "DONE", file: "38_economic_growth_pursuit.html", notes: "Sustainability question"},
+            {num: 39, year: "2018", question: "'In an age of rapid technological advancement, is a single career for life realistic?'", topic: "ECO", type: "P", sg: "No", status: "DONE", file: "39_single_career_realistic.html", notes: "Agent_35 - Single career viability"},
+            {num: 40, year: "2018", question: "'In the global village we inhabit, there is no justification for national boundaries.' How far do you agree?", topic: "POL", type: "J", sg: "No", status: "DONE", file: "40_national_boundaries_global_village.html", notes: "Agent_36"},
+            {num: 41, year: "2018", question: "To what extent is sporting achievement given adequate recognition in your society?", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "41_sporting_achievement_recognition_singapore.html", notes: "Agent_1"},
+            {num: 42, year: "2018", question: "Do handicrafts still have value when machine-produced goods are so readily available?", topic: "ART", type: "V", sg: "No", status: "DONE", file: "42_handicrafts_value.html", notes: "Agent_37"},
+            {num: 43, year: "2018", question: "'People today do not work as hard as they did in the past.' How true is this of your society?", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "43_work_ethic_singapore.html", notes: "Agent_1"},
+            {num: 44, year: "2018", question: "Discuss the view that all countries have an equal responsibility to counter terrorism.", topic: "POL", type: "R", sg: "No", status: "DONE", file: "44_terrorism_responsibility.html", notes: "Agent_38"},
+            {num: 45, year: "2018", question: "Is pressure a motivating force or a cause for unhappiness?", topic: "SOC", type: "I", sg: "No", status: "DONE", file: "45_pressure_motivation_unhappiness.html", notes: "Agent_39 - Mental health relevance"},
+            {num: 46, year: "2018", question: "'Works of art which have been removed from their country of origin should be returned.' Discuss.", topic: "ART", type: "J", sg: "No", status: "DONE", file: "46_art_repatriation.html", notes: "Agent_44"},
+            {num: 47, year: "2018", question: "'Foreign aid does not solve long-term problems.' To what extent is this a fair viewpoint?", topic: "POL", type: "E", sg: "No", status: "DONE", file: "47_foreign_aid_long_term.html", notes: "Agent_45"},
+            {num: 48, year: "2018", question: "Consider the view that we do not take enough responsibility for our own well-being.", topic: "SOC", type: "R", sg: "No", status: "DONE", file: "48_own_wellbeing_responsibility.html", notes: "Agent_46"},
+            
+            // 2017 Questions
+            {num: 49, year: "2017", question: "'The past is not dead; it is not even past.' Discuss.", topic: "SOC", type: "V", sg: "No", status: "DONE", file: "49_past_not_dead.html", notes: "Agent_47"},
+            {num: 50, year: "2017", question: "Can the use of animals for scientific research ever be justified?", topic: "SCI", type: "J", sg: "No", status: "DONE", file: "50_animal_research_justification.html", notes: "Agent_48"},
+            {num: 51, year: "2017", question: "In your society, to what extent is it acceptable for public money to be used for the acquisition of works of art?", topic: "ART", type: "J", sg: "Yes", status: "DONE", file: "51_public_art_acquisition.html", notes: "Agent_49 - Singapore arts spending"},
+            {num: 52, year: "2017", question: "'Rehabilitation, not punishment, should be the purpose of the justice system.' Discuss.", topic: "SOC", type: "V", sg: "No", status: "DONE", file: "52_rehabilitation_vs_punishment.html", notes: "Agent_50"},
+            {num: 53, year: "2017", question: "Is regulation of the press desirable?", topic: "POL", type: "V", sg: "No", status: "DONE", file: "53_press_regulation.html", notes: ""},
+            {num: 54, year: "2017", question: "Do events, rather than politicians, shape the future?", topic: "POL", type: "C", sg: "No", status: "DONE", file: "54_events_shape_future.html", notes: ""},
+            {num: 55, year: "2017", question: "How far is science fiction becoming fact?", topic: "SCI", type: "P", sg: "No", status: "DONE", file: "55_science_fiction_becoming_fact.html", notes: "AI/tech relevance"},
+            {num: 56, year: "2017", question: "Examine the role of music in establishing a national identity in your society.", topic: "ART", type: "V", sg: "Yes", status: "DONE", file: "56_music_singapore_identity.html", notes: "Agent_8 - Singapore national identity"},
+            {num: 57, year: "2017", question: "To what extent are people judged more by their physical appearance than by their abilities?", topic: "SOC", type: "I", sg: "No", status: "DONE", file: "57_appearance_vs_abilities.html", notes: ""},
+            {num: 58, year: "2017", question: "'Practical ability is just as important as intellectual skills.' How far is this true in your society?", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "58_practical_vs_intellectual_skills.html", notes: "Singapore meritocracy"},
+            {num: 59, year: "2017", question: "Assess the view that attempts to control climate change can never be truly effective.", topic: "ENV", type: "E", sg: "No", status: "DONE", file: "59_climate_control_effectiveness.html", notes: "High current relevance"},
+            {num: 60, year: "2017", question: "'The quality of written language is being destroyed by social media.' What is your view?", topic: "SOC", type: "I", sg: "No", status: "DONE", file: "60_written_language_social_media.html", notes: ""},
+            
+            // 2016 Questions
+            {num: 61, year: "2016", question: "'Any adaptation of a novel for film, television or the theatre is never as effective as the original.' Discuss.", topic: "ART", type: "E", sg: "No", status: "DONE", file: "61_novel_adaptations.html", notes: ""},
+            {num: 62, year: "2016", question: "Assess the view that traditional buildings have no future in your society.", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "62_traditional_buildings.html", notes: "Singapore heritage"},
+            {num: 63, year: "2016", question: "'Longer life expectancy creates more problems than benefits.' Discuss.", topic: "SOC", type: "I", sg: "No", status: "DONE", file: "63_longer_life_expectancy.html", notes: "Aging population relevance"},
+            {num: 64, year: "2016", question: "Considering the money involved, should developing countries be allowed to host major sporting events?", topic: "ECO", type: "J", sg: "No", status: "DONE", file: "64_developing_countries_sporting_events.html", notes: ""},
+            {num: 65, year: "2016", question: "'Human need, rather than profit, should always be the main concern of scientific research.' Discuss.", topic: "SCI", type: "V", sg: "No", status: "DONE", file: "65_human_need_vs_profit_research.html", notes: ""},
+            {num: 66, year: "2016", question: "'Countries experiencing conflict should be left to sort out their own problems.' How far do you agree?", topic: "POL", type: "R", sg: "No", status: "DONE", file: "66_conflict_intervention.html", notes: ""},
+            {num: 67, year: "2016", question: "How far has modern technology made it unnecessary for individuals to possess mathematical skills?", topic: "SCI", type: "I", sg: "No", status: "DONE", file: "67_modern_technology_math_skills.html", notes: ""},
+            {num: 68, year: "2016", question: "'People who do the most worthwhile jobs rarely receive the best financial rewards.' To what extent is this true of your society?", topic: "ECO", type: "V", sg: "Yes", status: "DONE", file: "68_worthwhile_jobs_rewards_singapore.html", notes: "Agent_8 - Singapore wage inequality"},
+            {num: 69, year: "2016", question: "Evaluate the claim that equality of opportunity for females is a desirable, but unrealistic, goal.", topic: "SOC", type: "P", sg: "No", status: "DONE", file: "69_female_equality_opportunity.html", notes: ""},
+            {num: 70, year: "2016", question: "Assess the view that most natural disasters are the result of human activity.", topic: "ENV", type: "J", sg: "No", status: "DONE", file: "70_natural_disasters_human_activity.html", notes: "Climate change link"},
+            {num: 71, year: "2016", question: "Is competition always desirable?", topic: "SOC", type: "V", sg: "No", status: "DONE", file: "71_competition_always_desirable.html", notes: ""},
+            {num: 72, year: "2016", question: "'Everyone has an opinion, but not everyone's opinion is of equal value.' What is your view?", topic: "SOC", type: "J", sg: "No", status: "DONE", file: "72_opinion_value.html", notes: "Misinformation relevance"},
+            
+            // 2015 Questions  
+            {num: 73, year: "2015", question: "'There is no such thing as bad publicity.' To what extent is this true?", topic: "SOC", type: "V", sg: "No", status: "DONE", file: "73_bad_publicity.html", notes: ""},
+            {num: 74, year: "2015", question: "How far is it possible for one country to forgive another for its past actions?", topic: "POL", type: "P", sg: "No", status: "DONE", file: "74_international_forgiveness.html", notes: ""},
+            {num: 75, year: "2015", question: "How effectively is public health promoted and managed in your society?", topic: "SOC", type: "E", sg: "Yes", status: "DONE", file: "75_public_health_singapore.html", notes: "Agent_7 - Singapore healthcare"},
+            {num: 76, year: "2015", question: "'No cause is ever worth dying for.' Discuss.", topic: "SOC", type: "J", sg: "No", status: "DONE", file: "76_no_cause_worth_dying.html", notes: ""},
+            {num: 77, year: "2015", question: "Consider the argument that the main purpose of television should be to educate rather than simply to entertain.", topic: "ART", type: "V", sg: "No", status: "DONE", file: "77_television_educate_entertain.html", notes: ""},
+            {num: 78, year: "2015", question: "In your society, how well are the demands of the economy and the environment balanced?", topic: "ENV", type: "E", sg: "Yes", status: "DONE", file: "78_economy_environment_balance.html", notes: "Singapore sustainability"},
+            {num: 79, year: "2015", question: "'Parents have no right to impose their own values and beliefs on their children.' Discuss.", topic: "SOC", type: "R", sg: "No", status: "DONE", file: "79_parents_values_children.html", notes: ""},
+            {num: 80, year: "2015", question: "'Books serve little purpose in education as technological developments become more sophisticated.' How far do you agree?", topic: "SCI", type: "V", sg: "No", status: "DONE", file: "80_books_education_technology.html", notes: ""},
+            {num: 81, year: "2015", question: "To what extent should the arts in your society focus on local rather than foreign talent?", topic: "ART", type: "V", sg: "Yes", status: "DONE", file: "81_local_vs_foreign_arts_talent.html", notes: "Singapore arts policy"},
+            {num: 82, year: "2015", question: "Should there be any controls over the production of energy when the need for it is so great?", topic: "ENV", type: "J", sg: "No", status: "DONE", file: "82_energy_production_controls.html", notes: ""},
+            {num: 83, year: "2015", question: "'When a government's finances for social welfare are limited, should they be directed towards the young or the old?'", topic: "POL", type: "R", sg: "No", status: "DONE", file: "83_social_welfare_young_vs_old.html", notes: "Aging population relevance"},
+            {num: 84, year: "2015", question: "'Human actions should be based on scientific fact, not religious faith.' How far do you agree with this statement?", topic: "SOC", type: "J", sg: "No", status: "DONE", file: "84_science_vs_faith.html", notes: ""},
+            
+            // 2014 Questions
+            {num: 85, year: "2014", question: "'Traditional marriage is an outdated concept.' To what extent is this true of your society?", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "85_traditional_marriage.html", notes: "Singapore family values"},
+            {num: 86, year: "2014", question: "How far should firms be allowed to limit their workers' rights when profits are at stake?", topic: "ECO", type: "J", sg: "No", status: "DONE", file: "86_workers_rights_vs_profits.html", notes: ""},
+            {num: 87, year: "2014", question: "'Gambling on sport undermines its spirit and should be banned.' How realistic is this position?", topic: "SOC", type: "P", sg: "No", status: "DONE", file: "87_gambling_sport_ban.html", notes: ""},
+            {num: 88, year: "2014", question: "Discuss the view that, with an increasing global need for energy, every possible source should be exploited to the full.", topic: "ENV", type: "J", sg: "No", status: "DONE", file: "88_energy_source_exploitation.html", notes: ""},
+            {num: 89, year: "2014", question: "'For the majority of people, the Arts are irrelevant to their daily lives.' How true is this of your society?", topic: "ART", type: "V", sg: "Yes", status: "DONE", file: "89_arts_relevance_daily_lives.html", notes: "Singapore arts appreciation"},
+            {num: 90, year: "2014", question: "How far is it important for people to be aware of current events in countries other than their own?", topic: "SOC", type: "V", sg: "No", status: "DONE", file: "90_global_awareness.html", notes: ""},
+            {num: 91, year: "2014", question: "In times of economic hardship, should a country still be expected to provide financial or material aid to others?", topic: "POL", type: "R", sg: "No", status: "DONE", file: "91_aid_economic_hardship.html", notes: ""},
+            {num: 92, year: "2014", question: "Do films offer anything more than an escape from reality?", topic: "ART", type: "V", sg: "No", status: "DONE", file: "92_films_escape_reality.html", notes: ""},
+            {num: 93, year: "2014", question: "To what extent can the regulation of scientific or technological developments be justified?", topic: "SCI", type: "J", sg: "No", status: "DONE", file: "93_scientific_regulation.html", notes: "AI regulation relevance"},
+            {num: 94, year: "2014", question: "'Getting what one wants in life is what matters.' Discuss.", topic: "SOC", type: "J", sg: "No", status: "NA", file: "", notes: ""},
+            {num: 95, year: "2014", question: "Examine the extent to which expenditure on arms and the armed forces is justifiable in the modern world.", topic: "POL", type: "J", sg: "No", status: "NA", file: "", notes: ""},
+            {num: 96, year: "2014", question: "Consider the view that some careers are better suited to one gender than the other.", topic: "SOC", type: "J", sg: "No", status: "NA", file: "", notes: ""},
+            
+            // Generated Contemporary Questions
+            {num: 97, year: "GEN", question: "'The post-pandemic world has fundamentally changed how your society values work-life balance.' How far do you agree?", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "97_work_life_balance.html", notes: "Agent_1"},
+            {num: 98, year: "GEN", question: "To what extent has the rise of mental health awareness in your society translated into meaningful action?", topic: "SOC", type: "E", sg: "Yes", status: "DONE", file: "98_mental_health_action.html", notes: "Agent_2"},
+            {num: 99, year: "GEN", question: "'Social media algorithms have done more harm than good to public discourse.' Discuss.", topic: "SOC", type: "I", sg: "No", status: "DONE", file: "99_social_media_algorithms.html", notes: "Agent_3"},
+            {num: 100, year: "GEN", question: "How far should your society accommodate the values and expectations of Generation Z in the workplace?", topic: "SOC", type: "R", sg: "Yes", status: "DONE", file: "100_gen_z_workplace.html", notes: "Agent_2"},
+            {num: 101, year: "GEN", question: "'Online communities can never truly replace face-to-face human connection.' How true is this in your society?", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "101_online_communities.html", notes: "Agent_6"},
+            {num: 102, year: "GEN", question: "Assess the view that 'cancel culture' has become more destructive than constructive.", topic: "SOC", type: "I", sg: "No", status: "DONE", file: "102_cancel_culture.html", notes: "Social accountability vs mob justice"},
+            {num: 103, year: "GEN", question: "To what extent has your society successfully integrated foreign workers and immigrants?", topic: "SOC", type: "E", sg: "Yes", status: "DONE", file: "103_foreign_worker_integration.html", notes: "Agent_2"},
+            {num: 104, year: "GEN", question: "'The pursuit of social justice has gone too far in silencing legitimate debate.' How far do you agree?", topic: "SOC", type: "J", sg: "No", status: "DONE", file: "104_social_justice_debate.html", notes: "Agent_7 - Free speech vs harm"},
+            {num: 105, year: "GEN", question: "How effectively does your society prepare young people for the uncertainties of the modern world?", topic: "SOC", type: "E", sg: "Yes", status: "DONE", file: "105_preparing_youth_uncertainties.html", notes: "Agent_3"},
+            {num: 106, year: "GEN", question: "'Influencer culture promotes superficial values that damage society.' Discuss.", topic: "SOC", type: "I", sg: "No", status: "DONE", file: "106_influencer_culture.html", notes: "TikTok, Instagram culture"},
+            {num: 107, year: "GEN", question: "To what extent are elderly citizens truly valued in your society, beyond mere rhetoric?", topic: "SOC", type: "V", sg: "Yes", status: "DONE", file: "107_elderly_citizens_valued.html", notes: "Agent_4 - Singapore aging population"},
+            {num: 108, year: "GEN", question: "'The concept of privacy is outdated in the digital age.' How acceptable is this view?", topic: "SOC", type: "J", sg: "No", status: "DONE", file: "108_privacy_outdated.html", notes: "Agent_4 - Data collection, surveillance"},
+            {num: 109, year: "GEN", question: "How far has the #MeToo movement and similar movements achieved lasting change in your society?", topic: "SOC", type: "I", sg: "Yes", status: "DONE", file: "109_metoo_lasting_change.html", notes: "Agent_5"},
+            {num: 110, year: "GEN", question: "'Generative AI like ChatGPT will do more harm than good to education.' How far do you agree?", topic: "SCI", type: "I", sg: "No", status: "DONE", file: "110_generative_ai_education.html", notes: "Agent_1"},
+            {num: 111, year: "GEN", question: "To what extent should your society regulate the development and use of artificial intelligence?", topic: "SCI", type: "R", sg: "Yes", status: "DONE", file: "111_ai_regulation.html", notes: "Agent_2"},
+            {num: 112, year: "GEN", question: "'The benefits of facial recognition technology outweigh the privacy concerns.' Discuss with reference to your society.", topic: "SCI", type: "J", sg: "Yes", status: "DONE", file: "112_facial_recognition_privacy.html", notes: "Agent_3"},
+            {num: 113, year: "GEN", question: "How realistic is it for your society to achieve carbon neutrality through technological solutions alone?", topic: "SCI", type: "P", sg: "Yes", status: "DONE", file: "113_carbon_neutrality_technology.html", notes: "Agent_6"},
+            {num: 114, year: "GEN", question: "'Social media platforms should be held legally responsible for the content shared on them.' How far do you agree?", topic: "SCI", type: "R", sg: "No", status: "DONE", file: "114_social_media_platform_responsibility.html", notes: "Platform accountability"},
+            {num: 115, year: "GEN", question: "Assess the view that cryptocurrency and blockchain technology are solutions in search of a problem.", topic: "SCI", type: "V", sg: "No", status: "DONE", file: "115_cryptocurrency_blockchain_solutions.html", notes: "Digital currency relevance"},
+            {num: 116, year: "GEN", question: "To what extent has automation and AI created more problems than it has solved in your society?", topic: "SCI", type: "I", sg: "Yes", status: "DONE", file: "116_automation_ai_problems.html", notes: "Agent_4 - Job displacement Singapore"},
+            {num: 117, year: "GEN", question: "'Gene editing technology should be available for enhancement, not just disease prevention.' Discuss.", topic: "SCI", type: "J", sg: "No", status: "DONE", file: "117_gene_editing_enhancement.html", notes: "CRISPR, designer babies"},
+            {num: 118, year: "GEN", question: "How far should your society embrace smart city technologies despite privacy concerns?", topic: "SCI", type: "J", sg: "Yes", status: "DONE", file: "118_smart_city_privacy.html", notes: "Agent_2"},
+            {num: 119, year: "GEN", question: "'The race to colonize space is a waste of resources that should be spent on Earth.' How far do you agree?", topic: "SCI", type: "V", sg: "No", status: "DONE", file: "119_space_colonization_resources.html", notes: "Agent_8"},
+            {num: 120, year: "GEN", question: "To what extent can technology solve the healthcare challenges facing your aging society?", topic: "SCI", type: "E", sg: "Yes", status: "DONE", file: "120_healthcare_technology_aging.html", notes: "Agent_7"},
+            {num: 121, year: "GEN", question: "'Online misinformation is the greatest threat to democracy in the 21st century.' Discuss.", topic: "SCI", type: "V", sg: "No", status: "DONE", file: "121_online_misinformation_democracy.html", notes: "Fake news, deepfakes"},
+            {num: 122, year: "GEN", question: "How effectively has your society managed the transition to a digital economy?", topic: "SCI", type: "E", sg: "Yes", status: "DONE", file: "122_digital_economy_transition.html", notes: "Agent_5"},
+            {num: 123, year: "GEN", question: "'The COVID-19 pandemic proved that authoritarian governments are more effective in crises.' How far do you agree?", topic: "POL", type: "J", sg: "No", status: "DONE", file: "123_covid_authoritarian_effectiveness.html", notes: "Pandemic response comparison"},
+            {num: 124, year: "GEN", question: "To what extent should your society prioritize national interests over international cooperation in a multipolar world?", topic: "POL", type: "V", sg: "Yes", status: "DONE", file: "124_national_vs_international.html", notes: "Agent_1"},
+            {num: 125, year: "GEN", question: "'Young people today are more politically engaged than previous generations.' How true is this of your society?", topic: "POL", type: "V", sg: "Yes", status: "DONE", file: "125_youth_political_engagement.html", notes: "Agent_3"},
+            {num: 126, year: "GEN", question: "How far should governments regulate what citizens can say online?", topic: "POL", type: "R", sg: "No", status: "NA", file: "", notes: "Free speech vs hate speech"},
+            {num: 127, year: "GEN", question: "'In an era of geopolitical tension, small nations like yours have less influence than ever.' Discuss.", topic: "POL", type: "C", sg: "Yes", status: "DONE", file: "127_small_nations_influence.html", notes: "Agent_6"},
+            {num: 128, year: "GEN", question: "To what extent is democracy the best form of government in the face of 21st century challenges?", topic: "POL", type: "V", sg: "No", status: "NA", file: "", notes: "Climate, pandemic, tech disruption"},
+            {num: 129, year: "GEN", question: "'Political polarization is the inevitable result of social media.' How far do you agree?", topic: "POL", type: "I", sg: "No", status: "NA", file: "", notes: "Echo chambers"},
+            {num: 130, year: "GEN", question: "How effectively does your society balance economic development with social welfare?", topic: "POL", type: "E", sg: "Yes", status: "DONE", file: "130_economic_development_social_welfare.html", notes: "Agent_7"},
+            {num: 131, year: "GEN", question: "'International institutions like the UN are no longer fit for purpose.' Discuss.", topic: "POL", type: "E", sg: "No", status: "NA", file: "", notes: "Global governance reform"},
+            {num: 132, year: "GEN", question: "To what extent should your government intervene in citizens' lifestyle choices to improve public health?", topic: "POL", type: "R", sg: "Yes", status: "DONE", file: "132_government_lifestyle_intervention.html", notes: "Agent_5"},
+            {num: 133, year: "GEN", question: "'The gig economy offers freedom, not exploitation.' How far is this true in your society?", topic: "ECO", type: "V", sg: "Yes", status: "DONE", file: "133_gig_economy.html", notes: "Agent_1"},
+            {num: 134, year: "GEN", question: "To what extent has the cost-of-living crisis in your society been adequately addressed?", topic: "ECO", type: "E", sg: "Yes", status: "DONE", file: "134_cost_of_living_crisis.html", notes: "Agent_3"},
+            {num: 135, year: "GEN", question: "'Remote work will fundamentally reshape cities and economies.' How far do you agree with reference to your society?", topic: "ECO", type: "I", sg: "Yes", status: "DONE", file: "135_remote_work_economies.html", notes: "Agent_7"},
+            {num: 136, year: "GEN", question: "How realistic is it to expect corporations to prioritize environmental and social goals over profit?", topic: "ECO", type: "P", sg: "No", status: "NA", file: "", notes: "ESG, greenwashing"},
+            {num: 137, year: "GEN", question: "'Universal Basic Income is necessary in an age of automation.' Discuss.", topic: "ECO", type: "J", sg: "No", status: "NA", file: "", notes: "AI job displacement"},
+            {num: 138, year: "GEN", question: "To what extent should your society reduce its dependence on foreign labor?", topic: "ECO", type: "V", sg: "Yes", status: "DONE", file: "138_foreign_labor_dependence.html", notes: "Agent_5"},
+            {num: 139, year: "GEN", question: "'Economic growth is no longer a reliable measure of societal progress.' How far do you agree?", topic: "ECO", type: "V", sg: "No", status: "NA", file: "", notes: "Well-being metrics"},
+            {num: 140, year: "GEN", question: "How far has your society succeeded in creating opportunities for social mobility?", topic: "ECO", type: "E", sg: "Yes", status: "DONE", file: "140_social_mobility.html", notes: "Agent_4 - Singapore meritocracy reality"},
+            {num: 141, year: "GEN", question: "'The global supply chain disruptions of recent years show that deglobalization is inevitable.' Discuss.", topic: "ECO", type: "I", sg: "No", status: "NA", file: "", notes: "COVID supply chains"},
+            {num: 142, year: "GEN", question: "To what extent can tourism sustainably contribute to your society's economy?", topic: "ECO", type: "P", sg: "Yes", status: "DONE", file: "142_sustainable_tourism.html", notes: "Agent_6"},
+            {num: 143, year: "GEN", question: "'Individual actions are meaningless in addressing climate change; only systemic change matters.' How far do you agree?", topic: "ENV", type: "V", sg: "No", status: "DONE", file: "143_individual_vs_systemic_climate.html", notes: "Agent_1"},
+            {num: 144, year: "GEN", question: "To what extent should your society sacrifice economic growth to meet environmental targets?", topic: "ENV", type: "J", sg: "Yes", status: "NA", file: "", notes: "Singapore green growth"},
+            {num: 145, year: "GEN", question: "'The climate crisis requires authoritarian measures that democracies cannot deliver.' Discuss.", topic: "ENV", type: "J", sg: "No", status: "DONE", file: "145_climate_authoritarianism.html", notes: "Agent_7 - Climate emergency powers"},
+            {num: 146, year: "GEN", question: "How effectively has your society reduced plastic waste and promoted a circular economy?", topic: "ENV", type: "E", sg: "Yes", status: "DONE", file: "146_plastic_waste_circular_economy.html", notes: "Agent_4 - Singapore waste management"},
+            {num: 147, year: "GEN", question: "'Developed nations have a moral obligation to compensate developing nations for climate damage.' How far do you agree?", topic: "ENV", type: "R", sg: "No", status: "NA", file: "", notes: "Climate reparations"},
+            {num: 148, year: "GEN", question: "To what extent can your society realistically adapt to rising sea levels and extreme weather?", topic: "ENV", type: "P", sg: "Yes", status: "NA", file: "", notes: "Singapore climate vulnerability"},
+            {num: 149, year: "GEN", question: "'Carbon taxes are the most effective way to combat climate change.' Discuss.", topic: "ENV", type: "E", sg: "No", status: "NA", file: "", notes: "Carbon pricing mechanisms"},
+            {num: 150, year: "GEN", question: "How far should your society prioritize biodiversity conservation over urban development?", topic: "ENV", type: "V", sg: "Yes", status: "DONE", file: "150_biodiversity_vs_development.html", notes: "Agent_5"},
+            {num: 151, year: "GEN", question: "'AI-generated art and music cannot be considered truly creative.' How far do you agree?", topic: "ART", type: "V", sg: "No", status: "NA", file: "", notes: "Generative AI, Midjourney"},
+            {num: 152, year: "GEN", question: "To what extent should your society invest in preserving traditional arts and cultural practices?", topic: "ART", type: "V", sg: "Yes", status: "DONE", file: "152_preserving_traditional_arts.html", notes: "Agent_6"},
+            {num: 153, year: "GEN", question: "'Streaming services have democratized access to culture, not diminished it.' Discuss.", topic: "ART", type: "I", sg: "No", status: "NA", file: "", notes: "Netflix, Spotify impact"},
+            {num: 154, year: "GEN", question: "How important is it for your society to develop a distinctive cultural identity in a globalized world?", topic: "ART", type: "V", sg: "Yes", status: "DONE", file: "154_singapore_cultural_identity_globalization.html", notes: "Agent_7"},
+            {num: 155, year: "GEN", question: "'The rise of short-form content like TikTok videos is destroying attention spans and deep thinking.' How far do you agree?", topic: "ART", type: "I", sg: "No", status: "NA", file: "", notes: "Content consumption patterns"},
+            {num: 156, year: "GEN", question: "To what extent should offensive historical monuments and artworks be removed from public display?", topic: "ART", type: "J", sg: "No", status: "NA", file: "", notes: "Cancel culture, historical context"},
+            {num: 157, year: "GEN", question: "'In your society, commercial success is valued more highly than artistic merit.' How true is this?", topic: "ART", type: "V", sg: "Yes", status: "NA", file: "", notes: "Singapore arts pragmatism"},
+            {num: 158, year: "GEN", question: "How far has the digital revolution enhanced or diminished the value of traditional journalism in your society?", topic: "ART", type: "I", sg: "Yes", status: "DONE", file: "158_digital_revolution_journalism_value.html", notes: "Agent_7"},
+            {num: 159, year: "GEN", question: "'Video games are a legitimate art form that deserves the same respect as literature and film.' Discuss.", topic: "ART", type: "V", sg: "No", status: "DONE", file: "159_video_games_art_form.html", notes: "Gaming culture"}
+        ];
+        
+        // Initialize table
+        function initializeTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            questionsData.forEach(q => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${q.num}</td>
+                    <td>${q.year}</td>
+                    <td class="question-text">${q.question}</td>
+                    <td><span class="topic-badge topic-${q.topic.toLowerCase()}">${q.topic}</span></td>
+                    <td>${q.type}</td>
+                    <td><span class="${q.sg === 'Yes' ? 'sg-yes' : 'sg-no'}">${q.sg}</span></td>
+                    <td><span class="status ${q.status.toLowerCase()}">${q.status}</span></td>
+                    <td>${q.file ? `<a href="${q.file}" target="_blank" class="view-essay">View Essay</a>` : '<span class="no-essay">Not available</span>'}</td>
+                    <td>${q.notes}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            updateStats();
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const doneCount = questionsData.filter(q => q.status === 'DONE').length;
+            const wipCount = questionsData.filter(q => q.status === 'WIP').length;
+            const naCount = questionsData.filter(q => q.status === 'NA').length;
+            
+            document.getElementById('completedCount').textContent = doneCount;
+            document.getElementById('wipCount').textContent = wipCount;
+            document.getElementById('naCount').textContent = naCount;
+        }
+        
+        // Filter functionality
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const yearFilter = document.getElementById('yearFilter').value;
+            const topicFilter = document.getElementById('topicFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const sgFilter = document.getElementById('sgFilter').value;
+            
+            const tbody = document.getElementById('tableBody');
+            const rows = tbody.getElementsByTagName('tr');
+            
+            Array.from(rows).forEach((row, index) => {
+                const question = questionsData[index];
+                let show = true;
+                
+                if (searchTerm && !question.question.toLowerCase().includes(searchTerm)) {
+                    show = false;
+                }
+                if (yearFilter && question.year !== yearFilter) {
+                    show = false;
+                }
+                if (topicFilter && question.topic !== topicFilter) {
+                    show = false;
+                }
+                if (statusFilter && question.status !== statusFilter) {
+                    show = false;
+                }
+                if (sgFilter && question.sg !== sgFilter) {
+                    show = false;
+                }
+                
+                row.style.display = show ? '' : 'none';
+            });
+        }
+        
+        // Sort functionality
+        let sortColumn = '';
+        let sortDirection = 'asc';
+        
+        function sortTable(column) {
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+            
+            const sortedData = [...questionsData].sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+                
+                if (column === 'num') {
+                    aVal = parseInt(aVal);
+                    bVal = parseInt(bVal);
+                }
+                
+                if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+                if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            // Update data array
+            questionsData.splice(0, questionsData.length, ...sortedData);
+            
+            // Update UI
+            initializeTable();
+            applyFilters();
+            
+            // Update sort indicators
+            document.querySelectorAll('th').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+            });
+            const currentTh = document.querySelector(`th[data-sort="${column}"]`);
+            if (currentTh) {
+                currentTh.classList.add(sortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+            }
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTable();
+            
+            // Filter listeners
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('yearFilter').addEventListener('change', applyFilters);
+            document.getElementById('topicFilter').addEventListener('change', applyFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            document.getElementById('sgFilter').addEventListener('change', applyFilters);
+            
+            // Sort listeners
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    sortTable(th.dataset.sort);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
